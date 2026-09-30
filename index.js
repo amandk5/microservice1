@@ -8,7 +8,9 @@ app.get("/data", async (req, res) => {
     try {
         // const data = await fetch("http://localhost:3002/");
         // const json = await data.text();
-        res.send("Hello World from Service 1!");
+        res.json({
+            message: "Hello World from Service 1!",
+        });
     } catch (err) {
         res.send("Error");
     }
