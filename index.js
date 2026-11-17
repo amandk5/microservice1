@@ -4,6 +4,7 @@ const app = express();
 
 app.use(express.json());
 
+// routes
 app.get("/data", async (req, res) => {
     try {
         // const data = await fetch("http://localhost:3002/");
