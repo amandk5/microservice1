@@ -1,5 +1,5 @@
 {
-  "name": "@your-org/service1",
+  "name": "@amandk5/service1",
   "version": "1.0.0",
   "private": false,
   "main": "./dist/index.cjs",
