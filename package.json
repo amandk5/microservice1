@@ -8,7 +8,7 @@
     "dist"
   ],
   "publishConfig": {
-    "registry": "https://github.com"
+    "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
     "build": "tsup index.js --format cjs,esm --external react",
