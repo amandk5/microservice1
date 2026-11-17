@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          registry-url: 'https://github.com'
+          registry-url: 'https://npm.pkg.github.com'
           scope: '@amandk5'
 
       - name: Install dependencies
