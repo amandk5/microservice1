@@ -1,8 +1,17 @@
 {
-  "name": "service1",
+  "name": "@your-org/service1",
   "version": "1.0.0",
-  "main": "index.js",
+  "private": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "registry": "https://github.com"
+  },
   "scripts": {
+    "build": "tsup index.js --format cjs,esm --external react",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon index.js"
   },
@@ -10,6 +19,13 @@
   "author": "",
   "license": "ISC",
   "description": "",
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0"
+  },
   "dependencies": {
     "express": "^5.2.1",
     "nodemon": "^3.1.14"
