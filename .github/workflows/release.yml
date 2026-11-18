@@ -3,7 +3,7 @@ name: Publish Official Release
 on:
   push:
     branches:
-      - main
+      - master
 
 permissions:
   contents: write
@@ -43,7 +43,7 @@ jobs:
       - name: Bump version & push tag
         run: |
           npm version patch -m "chore(release): %s [skip ci]"
-          git push origin main --follow-tags
+          git push origin master --follow-tags
 
       - name: Publish official release to GitHub Packages
         run: npm publish
