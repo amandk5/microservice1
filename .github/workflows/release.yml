@@ -6,11 +6,12 @@ on:
       - main
 
 permissions:
-  contents: write # Required to push the version bump commit and git tag back to main
+  contents: write
+  packages: write
+  pull-requests: write
 
 jobs:
   publish:
-    # Prevent infinite loop when the workflow pushes the version bump commit
     if: "!contains(github.event.head_commit.message, 'chore(release):')"
     runs-on: ubuntu-latest
 
@@ -21,11 +22,12 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Node.js
+      - name: Setup Node.js with GitHub Registry
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          registry-url: 'https://npmjs.org'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@amandk5'
 
       - name: Install dependencies
         run: npm ci
@@ -36,15 +38,33 @@ jobs:
       - name: Configure Git user
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@://github.com"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Bump version & push tag
         run: |
-          # Choose patch (1.0.0 -> 1.0.1) or minor (1.0.0 -> 1.1.0)
           npm version patch -m "chore(release): %s [skip ci]"
           git push origin main --follow-tags
 
-      - name: Publish to npm
-        run: npm publish --access public
+      - name: Publish official release to GitHub Packages
+        run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment official release on merged PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pkg = require('./package.json');
+            const prs = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+            });
+            for (const pr of prs.data) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: `🚀 **Official Release Published!**\n\nUpdate your app to the stable release:\n\`\`\`bash\nnpm install ${pkg.name}@${pkg.version}\n\`\`\``
+              });
+            }
