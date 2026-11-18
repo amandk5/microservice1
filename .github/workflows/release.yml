@@ -30,7 +30,7 @@ jobs:
           scope: '@amandk5'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build package
         run: npm run build --if-present
