@@ -1,0 +1,50 @@
+name: Publish Official Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write # Required to push the version bump commit and git tag back to main
+
+jobs:
+  publish:
+    # Prevent infinite loop when the workflow pushes the version bump commit
+    if: "!contains(github.event.head_commit.message, 'chore(release):')"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build package
+        run: npm run build --if-present
+
+      - name: Configure Git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@://github.com"
+
+      - name: Bump version & push tag
+        run: |
+          # Choose patch (1.0.0 -> 1.0.1) or minor (1.0.0 -> 1.1.0)
+          npm version patch -m "chore(release): %s [skip ci]"
+          git push origin main --follow-tags
+
+      - name: Publish to npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
