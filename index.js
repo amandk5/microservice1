@@ -17,7 +17,7 @@ app.get("/data", async (req, res) => {
     }
 });
 
-// listen at port 3001
+// server listen at port 3001
 app.listen(3001, () => {
     console.log("Service 1 is running on port 3001");
 });
